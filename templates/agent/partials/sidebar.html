@@ -1,0 +1,107 @@
+{% load static %}
+<div id="left-sidebar" class="sidebar">
+    <div class="sidebar-scroll">
+        <div class="user-account">
+            <div class="dropdown">
+                <span>Welcome,</span>
+                <a href="javascript:void(0);" class="dropdown-toggle user-name" data-toggle="dropdown"><strong>{{request.user}} (Agent)</strong></a>
+                <ul class="dropdown-menu dropdown-menu-right account">
+                    
+                    <li><a href="{% url 'website:logout' %}"><i class="icon-power"></i>Logout</a></li>
+                </ul>
+            </div>
+            <hr>
+          
+        </div>
+        <!-- Nav tabs -->
+      
+            
+        <!-- Tab panes -->
+        <div class="tab-content p-l-0 p-r-0">
+            <div class="tab-pane active" id="menu">
+                <nav id="left-sidebar-nav" class="sidebar-nav">
+                    <ul id="main-menu" class="metismenu">                            
+                        <li class="active">
+                           
+                                <a href="{% url 'agent:index' %}" ><i class="icon-home"></i> <span>Dashboard</span></a>
+
+                            </li>
+                        <li>
+                            <a href="#App" class="has-arrow"><i class=" icon-users"></i> <span>Dealer</span></a>
+                            <ul>
+                                <li><a href="{% url 'agent:add_dealer' %}">Add Dealer</a></li> 
+                                <li><a href="{% url 'agent:view_dealer' %}">View Dealer</a></li>                                    
+                                <li><a href="{% url 'agent:set_limit' %}">Set Limit</a></li>                                    
+                                <li><a href="{% url 'agent:view_limits' %}">Edit Limit</a></li>
+                                <li><a href="{% url 'agent:package' %}">Package</a></li>                                    
+                                <li><a href="{% url 'agent:new_package' %}">New Package</a></li>
+                                
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="{% url 'agent:sales_report' %}" ><i class="icon-notebook"></i> <span>Sales Report</span></a>
+                           
+                        </li>
+                        <li>
+                            <a href="{% url 'agent:daily_report' %}" ><i class="icon-book-open"></i> <span>Daily Report</span></a>
+                           
+                        </li>
+                        <li>
+                            <a href="{% url 'agent:results' %}" ><i class=" icon-trophy"></i> <span>Results</span></a>
+                           
+                        </li>
+                        
+                      
+                        <li>
+                            <a href="#uiElements" class="has-arrow"><i class="icon-book-open "></i> <span>Reports</span></a>
+                            <ul>
+                                <li>
+                                    <a href=" {% url 'agent:winning_report' %}"><span>Winning Report</span></a>
+                                 
+                                </li>
+                                
+                                <li>
+                                    <a href=" {% url 'agent:count_salereport' %}"><span>Count Sales Report</span></a>
+                                 
+                                </li>
+                                <li>
+                                    <a href=" {% url 'agent:winning_countreport' %}"><span>Winnning Count Report</span></a>
+                                 
+                                </li>
+                                <li>
+                                    <a href=" {% url 'agent:collection_report' %}"><span>Collection Report</span></a>
+                                 
+                                </li>
+                                <li>
+                                    <a href=" {% url 'agent:balance_report' %}"><span>Balance Report</span></a>
+                                 
+                                </li>
+                               
+                               
+                           
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="{% url 'agent:edit_bill_times' %}" ><i class="icon-note"></i> <span>Edit Bill</span></a>
+                           
+                        </li>
+                        
+                        <li>
+                            <a href=" {% url 'agent:total_balance' %}" ><i class="icon-note"></i> <span>Total Balance</span></a>
+                         
+                        </li>
+                        <li>
+                            <a href="{% url 'agent:change_password' %}" class="has-arrow"><i class="icon-wrench"></i> <span>Change Password</span></a>
+                        </li>
+                       
+                        
+                        
+                       
+                     
+                    </ul>
+                </nav>
+            </div>
+              
+        </div>          
+    </div>
+</div>

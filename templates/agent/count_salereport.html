@@ -1,0 +1,458 @@
+{% extends 'agent/partials/base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .navbar-bottom {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        height: 55px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        background-color: #ffffff;
+        overflow-x: auto;
+        justify-content: space-evenly;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .th{
+        text-align: center;
+    }
+
+    .td2{
+        text-align: center;
+    }
+    .td3{
+        text-align: center;
+    }
+    .th1, .td1{
+        text-align: center;
+    }
+
+ 
+
+</style>
+<div id="main-content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row  header">
+                <div class="col-lg-5 col-md-8 col-sm-12">                        
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'adminapp:index' %}"><i class="icon-home"></i></a></li>                            
+                        <li class="breadcrumb-item">Count Sales Report</li>
+                    </ul>
+                </div> 
+            </div>
+        </div>
+
+        <div class="row clearfix" style="padding-bottom: 0px;">
+            <form method="POST">
+                {% csrf_token %}
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="card" style="padding-bottom: 0px;padding-left: 0px;padding-right: 0px; background-color: antiquewhite;padding-top: 10px;">
+                    <div class="body">
+                        <div class="col-lg-12" style="padding-top: 0px;padding-bottom: 0px;">
+                                
+                                <div class="body">
+                                    <div class="row clearfix">
+                                        <div class="col-md-6 col-6">
+                                            <div class="form-group">
+                                                <input type="date" class="form-control" id="from-date" name="from-date">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-6">
+                                            <div class="form-group">
+                                                <input type="date" class="form-control" id="to-date" name="to-date">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-6">
+                                            <div class="form-group">
+                                                <select class="form-control show-tick ms select2" data-placeholder="Select"
+                                                    name="select-agent" id="agent">
+                                                    <option value="all">All</option>
+                                                    <option value="{{request.user}}">Myself</option>
+                                                    {% for dealer in dealers %}
+                                                    <option value="{{dealer.user.id}}">{{dealer.user}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-6">
+                                            <div class="form-group">
+                                                <select class="form-control show-tick ms select2" data-placeholder="Select"
+                                                    name="time" id="time">
+                                                    <option value="all">All Times</option>
+                                                    {% for time in times %}
+                                                    <option value="{{time.id}}">{{time.game_time}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-6">
+                                            <div class="form-group">
+                                                <button type="submit" class="btn btn-primary">Search</button>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-6">
+                                            <div class="form-group">
+                                                <button class="btn btn-primary" id="pdfButton" name="pdfButton" type="submit">Download</button>
+
+                                            </div>
+                                        </div>
+                                      
+                                    </div>
+    
+                                    
+                                    </div>
+                                                                        
+                                    </div>
+                                   
+                                 </div>
+                                 </div></div></div></div></form></div>
+                                
+                                <div class="body">
+                                    <div class="table-responsive" style="padding-bottom: 20px;">
+                                        <table class="table m-b-0">
+                                       
+                                            <thead class="l-blue">
+                                                <tr>
+                                                     <th class="th">Positon</th>
+                                                     <th class="th">Count</th>
+                                                     <th class="th">Amount</th>
+                                                    
+                                                </tr>
+                                            </thead>
+                                            <tbody class="not-summary">
+
+                                                <tr class="l-parpl">
+                                                    <td class="td2">Super</td>
+                                                    <td class="td3">{{super_totals.total_count}}</td>
+                                                    <td class="td2">{{super_totals.total_amount|floatformat:2}}</td>                                                  
+                                                </tr>
+                                                <tr class="l-pink">
+                                                    <td class="td2">Box</td>
+                                                    <td class="td3">{{box_totals.total_count}}</td>
+                                                    <td class="td2">{{box_totals.total_amount|floatformat:2}}</td>                                                  
+                                                </tr>
+                                                <tr class="l-turquoise">
+                                                    <td class="td2">Single</td>
+                                                    <td class="td3">{{single_totals.total_count}}</td>
+                                                    <td class="td2">{{single_totals.total_amount|floatformat:2}}</td>                                                  
+                                                </tr>
+                                                <tr class="l-parpl">
+                                                    <td class="td2">Double</td>
+                                                    <td class="td3">{{double_totals.total_count}}</td>
+                                                    <td class="td2">{{double_totals.total_amount|floatformat:2}}</td>                                                  
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                         <div  style="padding-top: 50px;"></div>
+                                        <!-- <div class="text-right" style="padding-top: 50px;"> <button class="btn btn-primary" id="printbutton" onclick="makeprint()"
+                                            type="submit">Print </button></div> -->
+                                   
+                                    </div>
+                                   
+                                </div>
+                                
+                            </div>
+                           
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            
+        
+        
+    </div>
+</div>
+
+<nav class="navbar-bottom" id="btotal">
+    <table>
+        <thead>
+            <tr>
+                 <th class="th1">TOTAL COUNT</th>
+                 <th class="th1">TOTAL AMOUNT</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="td1">{{totals.net_count}}</td>
+                <td class="td1">{{totals.net_amount|floatformat:2}}</td>
+            </tr>
+        </tbody>
+    </table>
+</nav>
+
+
+
+<div id="pdftab">
+    <h3 style="display: inline-block">Count Sales Report</h3>
+    <h3 id="demo" style="display: inline-block"></h3>
+    <h3 id="demo1" style="display: inline-block"></h3>
+    <h3 id="demo4" style="display: inline-block;"></h3>
+
+    <h3 id="demo"></h3>
+    <h3 id="demo1"></h3>
+    <h3 id="demo3"></h3>
+    <hr>
+    <div class="body">
+
+
+        <div class="table-responsive">
+            <table class="table m-b-0" style="border: 2px ; width: 100%;height: 30%;">
+        
+                <thead>
+                    <tr>
+                         <th class="th" style="text-align: center;">Positon</th>
+                         <th class="th" style="text-align: center;">Count</th>
+                         <th class="th" style="text-align: center;">Amount</th>
+                        
+                    </tr>
+                </thead>
+                <tbody class="not-summary">
+
+                    <tr style="text-align: center;">
+                        <td class="td2" style="text-align: center;">Super</td>
+                        <td class="td3"style="text-align: center;">{{super_totals.total_count}}</td>
+                        <td class="td2" style="text-align: center;">{{super_totals.total_amount|floatformat:2}}</td>                                                  
+                    </tr>
+                    <tr style="text-align: center;">
+                        <td class="td2" style="text-align: center;">Box</td>
+                        <td class="td3"style="text-align: center;">{{box_totals.total_count}}</td>
+                        <td class="td2" style="text-align: center;">{{box_totals.total_amount|floatformat:2}}</td>                                                  
+                    </tr>
+                    <tr style="text-align: center;">
+                        <td class="td2" style="text-align: center;">Single</td>
+                        <td class="td3"style="text-align: center;">{{single_totals.total_count}}</td>
+                        <td class="td2" style="text-align: center;">{{single_totals.total_amount|floatformat:2}}</td>                                                  
+                    </tr>
+                    <tr  style="text-align: center;">
+                        <td class="td2" style="text-align: center;">Double</td>
+                        <td class="td3"style="text-align: center;">{{double_totals.total_count}}</td>
+                        <td class="td2" style="text-align: center;">{{double_totals.total_amount|floatformat:2}}</td>                                                  
+                    </tr>
+                </tbody>
+            </table>
+           <hr>
+            <!-- <div class="text-right" style="padding-top: 50px;"> <button class="btn btn-primary" id="printbutton" onclick="makeprint()"
+                type="submit">Print </button></div> -->
+            <div class="col-md-12 text-right" id="total">
+                <h6>TOTAL COUNT : {{totals.net_count}}</h6>
+                <h6>TOTAL AMOUNT : {{totals.net_amount|floatformat:2}}</h6>
+
+            </div>
+        </div>
+       
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $("#summary-button").change(function() {
+            if (this.checked) {
+                $(".summary-row").show(); // Show the row when the checkbox is checked
+                $(".not-summary").hide();
+            } else {
+                $(".summary-row").hide(); // Hide the row when the checkbox is unchecked
+                $(".not-summary").show(); 
+            }
+        });
+    });
+</script>
+<script>
+    // Get the current date in the format "YYYY-MM-DD"
+    function getCurrentDate() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const day = now.getDate().toString().padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // Check if selected_from and selected_to are defined
+    var selectedFrom = "{{selected_from}}";
+    var selectedTo = "{{selected_to}}";
+
+    if (selectedFrom && selectedTo) {
+        document.getElementById('from-date').value = selectedFrom;
+        document.getElementById('to-date').value = selectedTo;
+    } else {
+        document.getElementById('from-date').value = getCurrentDate();
+        document.getElementById('to-date').value = getCurrentDate();
+    }
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        var selectTime = document.getElementById("time");
+        var selectAgent = document.getElementById("agent")
+        // Set the selected value based on the selected_dealer variable
+        selectTime.value = "{{ selected_time }}";
+        selectAgent.value = "{{ selected_dealer }}"
+        
+
+    });
+</script>
+<script>
+
+    const x = document.getElementById("from-date");
+    const y = document.getElementById("to-date");
+
+    let currentVal = x.value;
+    let currentValue = y.value;
+
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+    let fromDate = new Date(currentVal);
+    let toDate = new Date(currentValue);
+
+    let fromDayOfWeek = daysOfWeek[fromDate.getDay()];
+    let toDayOfWeek = daysOfWeek[toDate.getDay()];
+
+    document.getElementById("demo").innerHTML = " : " + currentVal + " (" + fromDayOfWeek + ")";
+    document.getElementById("demo1").innerHTML = "&nbsp; to &nbsp;" + currentValue + " (" + toDayOfWeek + ")";
+    document.getElementById("demo4").innerHTML = " : " + "{{ selected_game_time }}";
+
+
+
+</script>
+
+
+<script>
+    //   pdftab hide
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Hide the pdftab div when the page loads
+        var pdftab = document.getElementById("pdftab");
+        if (pdftab) {
+            pdftab.style.display = "none";
+        }
+    });
+</script>
+
+<script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+
+<script>
+    function generateAndOpenPDF() {
+        var dateFrom = document.getElementById('from-date').value;
+        var dateTo = document.getElementById('to-date').value;
+        // Disable the button to prevent multiple clicks
+        var pdfButton = document.getElementById("pdfButton");
+        if (pdfButton) {
+            pdfButton.disabled = true;
+        }
+
+        var pdftab = document.getElementById("pdftab");
+
+        // Show the pdftab div when generateAndOpenPDF function is called
+        if (pdftab) {
+            pdftab.style.display = "block"; // or "inline" or "inline-block" depending on your layout
+        }
+
+        var element = document.getElementById('pdftab');
+        if (!element) {
+            console.error("Element with ID 'pdftab' not found.");
+
+            // Re-enable the button in case of an error
+            if (pdfButton) {
+                pdfButton.disabled = false;
+            }
+
+            return;
+        }
+
+        var rowsPerPage = 10; // Number of rows to display per page
+
+        // Configuration options for html2pdf
+        var options = {
+            margin: 10,
+            filename: 'Count Sales Report -' + dateFrom + ' to ' + dateTo + ' - ' + '{{ selected_game_time }}',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a3', orientation: 'portrait' },
+        };
+
+        // Call html2pdf with the specified options
+        html2pdf(element, options)
+            .then(function (pdf) {
+                var totalPages = pdf.internal.getNumberOfPages();
+
+                for (var i = 1; i <= totalPages; i++) {
+                    pdf.setPage(i);
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(150);
+
+                    // Calculate the range of rows to display on this page
+                    var startRow = (i - 1) * rowsPerPage;
+                    var endRow = Math.min(i * rowsPerPage, element.rows.length);
+
+                    // Loop through the rows and display only the selected range
+                    for (var j = startRow; j < endRow; j++) {
+                        var row = element.rows[j];
+                        var cells = row.getElementsByTagName('td');
+
+                        for (var k = 0; k < cells.length; k++) {
+                            pdf.text(cells[k].innerText, 20 + k * 30, 15 + (j % rowsPerPage) * 10);
+                        }
+                    }
+
+                    pdf.text('Footer content', 20, pdf.internal.pageSize.height - 40);
+                }
+
+                // Get the PDF data as a Blob
+                var pdfBlob = pdf.output('blob');
+
+                // Create a link to the Blob data with the Google Drive viewer link
+                var driveViewerLink = 'https://drive.google.com/viewerng/viewer?embedded=true&url=' + encodeURIComponent(URL.createObjectURL(pdfBlob));
+
+                // Open the link in a new tab
+                window.open(driveViewerLink, '_blank');
+
+                // Hide the pdftab div after generating and opening the PDF
+                if (pdftab) {
+                    pdftab.style.display = "none";
+                }
+
+                // Re-enable the button after generating and opening the PDF
+                if (pdfButton) {
+                    pdfButton.disabled = false;
+                }
+
+                console.log("PDF generated and opened successfully:", pdf);
+            })
+            .catch(function (error) {
+                console.error("Error generating PDF:", error);
+
+                // Restore the display property of the pdftab div in case of an error
+                if (pdftab) {
+                    pdftab.style.display = "none";
+                }
+
+                // Re-enable the button in case of an error
+                if (pdfButton) {
+                    pdfButton.disabled = false;
+                }
+            });
+    }
+
+</script>
+
+
+
+
+{% endblock %} 

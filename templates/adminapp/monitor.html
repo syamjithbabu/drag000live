@@ -1,0 +1,426 @@
+{% extends 'adminapp/partials/base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .expand-row{
+        background-color: rgb(46, 206, 255);
+    }
+</style>
+
+<style>
+    .table-cell {
+        border: 1px solid #d2d2d2; /* Add a 1px black border to each cell */
+        text-align: center;
+}
+    .navbar-bottom {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        height: 55px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        background-color: #ffffff;
+        overflow-x: auto;
+        justify-content: space-evenly;
+        display: flex;
+        flex-direction: column;
+    }
+
+    th, td{
+        text-align: center;
+    }
+</style>
+
+<div id="main-content">
+    <div class="container-fluid">
+        <div class="block-header">
+            
+            <div class="row">
+                <div class="col-lg-5 col-md-8 col-sm-12">
+                    
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'agent:index' %}"><i class="icon-home"></i></a></li>
+                        <li class="breadcrumb-item active">Monitor</li>
+                        
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+
+        <div class="row clearfix">
+            <a href="{% url 'adminapp:set_monitor' id %}" class="btn btn-primary mt-3 mr-2" style="position: absolute; top: 0; right: 0;">Set Monitor</a>
+            <div class="col-md-12">
+                <div class="card">
+
+                    <div class="body">
+                        
+                        
+                            <ul class="nav nav-tabs-new2">
+
+                                <div class="col-12">
+                                    <label class="fancy-radio"><input id="all" name="radio" type="radio" checked><span><i></i>ALL</span></label>
+                                    <label class="fancy-radio"><input id="one" name="radio" type="radio"><span><i></i>1</span></label>
+                                    <label class="fancy-radio"><input id="two" name="radio" type="radio"><span><i></i>2</span></label>
+                                    <label class="fancy-radio"><input id="three" name="radio" type="radio"><span><i></i>3</span></label>
+                                </div>
+                                
+                                <div class="col-12" id="for-one" style="display: none;">
+                                    <input type="checkbox" value="A" name="checkbox2" id="">
+                                    <span>A</span>
+                                    <input type="checkbox" value="B" name="checkbox2" id="">
+                                    <span>B</span>
+                                    <input type="checkbox" value="C" name="checkbox2" id="">
+                                    <span>C</span>
+                                </div>
+                                
+                                <div class="col-12" id="for-two" style="display: none;">
+                                    <input type="checkbox" value="AB" name="checkbox2" id="">
+                                    <span>AB</span>
+                                    <input type="checkbox" value="BC" name="checkbox2" id="">
+                                    <span>BC</span>
+                                    <input type="checkbox" value="AC" name="checkbox2" id="">
+                                    <span>AC</span>
+                                </div>
+                                
+                                <div class="col-12" id="for-three" style="display: none;">
+                                    <input type="checkbox" value="Super" name="checkbox2" id="">
+                                    <span>Super</span>
+                                    <input type="checkbox" value="Box" name="checkbox2" id="">
+                                    <span>Box</span>
+                                </div>
+
+                                <div class="col-lg-2 col-md-6 col-6">
+                                    <div class="form-group">
+                                        <input type="date" class="form-control" id="from-date" name="from-date">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-6">
+                                    <div class="form-group">
+                                        <select class="form-control show-tick ms select2" data-placeholder="Select"
+                                            name="time" id="time">
+                                            {% for time in times %}
+                                            <option value="{{time.id}}">{{time.game_time}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-6 col-6">
+                                    <div class="form-group">
+                                        <input type="number" class="form-control" id="search" placeholder="Search" name="serch">
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-6 col-3">
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary">Search</button>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-6 col-3">
+                                    <div class="form-group">
+                                        <a href="{% url 'adminapp:clear_all' id %}" class="btn btn-primary">Clear All</a>
+                                    </div>
+                                </div>
+                                <label class="control-inline fancy-checkbox ml-auto">
+                                    <input type="checkbox" id="hide-zero" onchange="hideZeroCountRows()">
+                                    <span>Hide Zero Count</span>
+                                </label>
+                                <label class="control-inline fancy-checkbox ml-auto">
+                                    <input type="checkbox" name="sort" id="sort">
+                                    <span>Sort Customer</span>
+                                </label>
+                            </ul>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row clearfix">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="body">
+                            <div class="table-responsive" id="main-row">
+                                <table class="table m-b-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Customer</th>
+                                            <th>LSK</th>
+                                            <th>No</th>
+                                            <th>Count</th>
+                                            <th>Limit</th>
+                                            <th>#</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for game in monitor_games %}
+                                        <tr class="main-row l-pink" >
+                                            {% if not game.combined %}
+                                                <td>{{ game.user }}</td>
+                                            {% else %}
+                                                <td>$</td>
+                                            {% endif %}
+                                            <td>{{ game.LSK }}</td>
+                                            <td>{{ game.number }}</td>
+                                            <td>{{ game.count }}</td>
+                                            <td>{{ game.remaining_limit }}</td>
+                                            {% if game.remaining_limit <= 0 %}
+                                            <td>#</td>
+                                            {% else %}
+                                            <td><a href="{% url 'adminapp:clear_limit' game.id id %}">clear</a></td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="table-responsive" id="sorted-rows-container" style="display: none;">
+                                <table class="table m-b-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Customer</th>
+                                            <th>LSK</th>
+                                            <th>No</th>
+                                            <th>Count</th>
+                                            <th>Limit</th>
+                                            <th>#</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for game in agent_games %}
+                                        <tr class="sorted-row  l-turquoise">
+                                            <td>{{game.agent.user}}</td>
+                                            <td>{{game.LSK}}</td>
+                                            <td>{{game.number}}</td>
+                                            <td>{{game.count}}</td>
+                                            <td>0</td>
+                                            <td>#</td>
+                                        </tr>
+                                        {% endfor %}
+                                        {% for game in dealer_games %}
+                                        <tr class="sorted-row l-parpl">
+                                            <td>{{game.agent.user}}({{game.dealer.user}})</td>
+                                            <td>{{game.LSK}}</td>
+                                            <td>{{game.number}}</td>
+                                            <td>{{game.count}}</td>
+                                            <td>0</td>
+                                            <td>#</td>
+                                        </tr>
+                                        {% endfor %}
+                                </table>
+                                
+                            </div>
+                            {% if searched %}
+                            {% else %}
+                            <button type="submit" class="btn btn-primary" name="load_full" value="true">Load Full</button>
+                            {% endif %}
+                            <div  style="padding-top: 50px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        </form>
+    </div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+
+    // Get the radio buttons
+    var inputSearch = document.getElementById("search");
+    var allRadio = document.getElementById("all");
+    var oneRadio = document.getElementById("one");
+    var twoRadio = document.getElementById("two");
+    var threeRadio = document.getElementById("three");
+
+    var maxDigits = 3;
+    inputSearch.maxLength = maxDigits;
+
+    // Add event listener to the input for limiting length
+    inputSearch.addEventListener("input", function () {
+        if (inputSearch.value.length > maxDigits) {
+            inputSearch.value = inputSearch.value.slice(0, maxDigits);
+        }
+    });
+
+    // Get the div elements
+    var forOneDiv = document.getElementById("for-one");
+    var forTwoDiv = document.getElementById("for-two");
+    var forThreeDiv = document.getElementById("for-three");
+
+    // Add event listeners to the radio buttons
+    allRadio.addEventListener("change", function () {
+        forOneDiv.style.display = "none";
+        forTwoDiv.style.display = "none";
+        forThreeDiv.style.display = "none";
+
+        var maxDigits = 3;
+        inputSearch.maxLength = maxDigits;
+
+        // Add event listener to the input for limiting length
+        inputSearch.addEventListener("input", function () {
+            if (inputSearch.value.length > maxDigits) {
+                inputSearch.value = inputSearch.value.slice(0, maxDigits);
+            }
+        });
+
+    });
+
+    oneRadio.addEventListener("change", function () {
+        forOneDiv.style.display = "block";
+        forTwoDiv.style.display = "none";
+        forThreeDiv.style.display = "none";
+
+        inputSearch.value = '';
+
+        var maxDigits = 1;
+        inputSearch.maxLength = maxDigits;
+
+        // Add event listener to the input for limiting length
+        inputSearch.addEventListener("input", function () {
+            if (inputSearch.value.length > maxDigits) {
+                inputSearch.value = inputSearch.value.slice(0, maxDigits);
+            }
+        });
+
+    });
+
+    twoRadio.addEventListener("change", function () {
+        forOneDiv.style.display = "none";
+        forTwoDiv.style.display = "block";
+        forThreeDiv.style.display = "none";
+
+        inputSearch.value = '';
+
+        var maxDigits = 2;
+        inputSearch.maxLength = maxDigits;
+
+        // Add event listener to the input for limiting length
+        inputSearch.addEventListener("input", function () {
+            if (inputSearch.value.length > maxDigits) {
+                inputSearch.value = inputSearch.value.slice(0, maxDigits);
+            }
+        });
+
+    });
+
+    threeRadio.addEventListener("change", function () {
+        forOneDiv.style.display = "none";
+        forTwoDiv.style.display = "none";
+        forThreeDiv.style.display = "block";
+
+        inputSearch.value = '';
+
+        var maxDigits = 3;
+        inputSearch.maxLength = maxDigits;
+
+        // Add event listener to the input for limiting length
+        inputSearch.addEventListener("input", function () {
+            if (inputSearch.value.length > maxDigits) {
+                inputSearch.value = inputSearch.value.slice(0, maxDigits);
+            }
+        });
+
+    });
+</script>
+
+<script>
+    // Get the current date in the format "YYYY-MM-DD"
+    function getCurrentDate() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const day = now.getDate().toString().padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // Check if selected_from and selected_to are defined
+    var selectedFrom = "{{selected_from}}";
+
+    if (selectedFrom) {
+        document.getElementById('from-date').value = selectedFrom;
+    } else {
+        document.getElementById('from-date').value = getCurrentDate();
+    }
+</script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get the select element by its ID
+        var selectDealer = document.getElementById("agent");
+        var selectTime = document.getElementById("time");
+        var selectFrom = document.getElementById("from-date");
+        var selectTo = document.getElementById("to-date");
+        var radioInputs = document.getElementsByName("select-lsk");
+
+        console.log("the time id");
+
+        selectTime.value = "{{ selected_time }}";
+
+        selected_lsk = "{{ selected_lsk }}";
+        for (var i = 0; i < radioInputs.length; i++) {
+            if (radioInputs[i].value === selected_lsk) {
+                radioInputs[i].checked = true;
+                break; // Exit the loop once the correct radio input is found
+            }
+        }
+
+    });
+</script>
+
+<script>
+    function hideZeroCountRows() {
+        // Get the "Hide Zero Count" checkbox element
+        var hideZeroCheckbox = document.getElementById('hide-zero');
+        
+        // Get all the rows with class "main-row"
+        var rows = document.querySelectorAll('.main-row');
+    
+        // Loop through the rows and hide those with remaining_limit equal to 0 when the checkbox is checked
+        for (var i = 0; i < rows.length; i++) {
+            // Get the "remaining_limit" value from the fifth column (adjust the index based on your table structure)
+            var remainingLimitCell = rows[i].getElementsByTagName('td')[4];
+    
+            // Check if the checkbox is checked and the remaining limit is 0, then hide the row
+            if (hideZeroCheckbox.checked && parseInt(remainingLimitCell.textContent) === 0) {
+                rows[i].style.display = 'none';
+            } else {
+                rows[i].style.display = ''; // Show the row
+            }
+        }
+    }
+</script>
+
+<script>
+    function toggleSorting() {
+        // Get the "Sort Customer" checkbox element
+        var sortCheckbox = document.getElementById('sort');
+
+        var mainRows = document.getElementById('main-row');
+        var sortedRows = document.getElementById('sorted-rows-container');
+
+
+        // Check the checkbox status and show/hide containers accordingly
+        if (sortCheckbox.checked) {
+            mainRows.style.display = 'none'; // Hide main rows
+            sortedRows.style.display = '';    // Show sorted rows
+
+        } else {
+            mainRows.style.display = '';       // Show main rows
+            sortedRows.style.display = 'none'; // Hide sorted rows
+        }
+    }
+
+    document.getElementById('sort').addEventListener('click', toggleSorting);
+</script>
+
+
+    {% endblock %}

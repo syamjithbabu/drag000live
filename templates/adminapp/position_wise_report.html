@@ -1,0 +1,221 @@
+{% extends 'adminapp/partials/base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .navbar-bottom {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        height: 55px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        background-color: #ffffff;
+        overflow-x: auto;
+        justify-content: space-evenly;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .th{
+        text-align: center;
+    }
+
+    .td2{
+        text-align: center;
+    }
+    .td3{
+        text-align: center;
+    }
+    .th1, .td1{
+        text-align: center;
+    }
+
+
+/* print start here */
+
+
+@media screen {
+
+
+#dateprint {
+    display: none;
+}
+
+#totalcount {
+    display: none;
+}
+#printThisDiv {
+display: none;
+}
+
+}
+
+
+</style>
+<div id="main-content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row header">
+                <div class="col-lg-5 col-md-8 col-sm-12">                        
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'adminapp:index' %}"><i class="icon-home"></i></a></li>                            
+                        <li class="breadcrumb-item">Position Wise Report</li>
+                    </ul>
+                </div> 
+            </div>
+        </div>
+
+        <div class="row clearfix" style="padding-bottom: 10px;">
+            <form method="POST">
+                {% csrf_token %}
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="card serch" style="background-color:antiquewhite;padding-left: 0px;padding-right: 0px; padding-top: 10px;">
+                    
+                        <div class="col-lg-12">
+                                
+                                <div class="body">
+                                    <div class="row clearfix" style="padding-bottom: 0px;padding-left: 0px;padding-right: 0px;">
+                                        <div class="col-md-6 col-6">
+                                            <div class="form-group">
+                                                <input type="date" class="form-control" id="from-date" name="from-date">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-6">
+                                            <div class="form-group">
+                                                <input type="date" class="form-control" id="to-date" name="to-date">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-6">
+                                            <div class="form-group">
+                                                <select class="form-control show-tick ms select2" data-placeholder="Select"
+                                                    name="time" id="time">
+                                                    <option value="all">All Times</option>
+                                                    {% for time in times %}
+                                                    <option value="{{time.id}}">{{time.game_time}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                     
+                                    
+                                    <div class="col-md-6 col-6">
+                                        <div class="form-group">                                               
+                                                <button type="submit" class="btn btn-primary">Search</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-6">
+                                            <div class="form-group">                                               
+                                                <button class="btn btn-primary" id="pdfButton" name="pdfButton" type="submit">Download</button>
+
+                                                </div>
+                                            </div>
+                                    </div>
+                                                                        
+                                    </div>
+                                   
+                                 </div>
+                                </div>
+                                
+                            
+                        </div>
+                   
+                    </form>
+                    </div>
+                </div>
+            </div>
+       
+                                
+                                <div class="body">
+                                    <div class="table-responsive">
+                                        <table class="table m-b-0">
+                                   
+                                            <thead>
+                                                <tr class="l-blue">
+                                                     <th class="th">Position</th>
+                                                     <th class="th">Count</th>
+                                                     <th class="th">Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="not-summary">
+                                                {% for combined_result in combined_stats_list %}
+                                                <tr class="l-pink">
+                                                    {% if combined_result.position == '1' %}
+                                                        <td class="td2">First ({{ combined_result.category }})</td>
+                                                    {% elif combined_result.position == '2' %}
+                                                        <td class="td2">Second ({{ combined_result.category }})</td>
+                                                    {% elif combined_result.position == '3' %}
+                                                        <td class="td2">Third ({{ combined_result.category }})</td>
+                                                    {% elif combined_result.position == '4' %}
+                                                        <td class="td2">Fourth ({{ combined_result.category }})</td>
+                                                    {% elif combined_result.position == '5' %}
+                                                        <td class="td2">Fifth ({{ combined_result.category }})</td>
+                                                    {% elif combined_result.position == '6' %}
+                                                        <td class="td2">Sixth ({{ combined_result.category }})</td>
+                                                    {% endif %}
+                                                    <td class="td2">{{ combined_result.count }}</td>
+                                                    <td class="td2">{{ combined_result.total }}</td>
+                                                </tr>
+                                            {% endfor %}
+
+                                            </tbody>    
+                                        </table>
+                                       
+                                    </div>
+                                    <div  style="padding-top: 50px;"></div>
+                                    </div>
+                                   
+                    
+        </div>
+        
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $("#summary-button").change(function() {
+            if (this.checked) {
+                $(".summary-row").show(); // Show the row when the checkbox is checked
+                $(".not-summary").hide();
+            } else {
+                $(".summary-row").hide(); // Hide the row when the checkbox is unchecked
+                $(".not-summary").show(); 
+            }
+        });
+    });
+</script>
+<script>
+    // Get the current date in the format "YYYY-MM-DD"
+    function getCurrentDate() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const day = now.getDate().toString().padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // Check if selected_from and selected_to are defined
+    var selectedFrom = "{{selected_from}}";
+    var selectedTo = "{{selected_to}}";
+
+    if (selectedFrom && selectedTo) {
+        document.getElementById('from-date').value = selectedFrom;
+        document.getElementById('to-date').value = selectedTo;
+    } else {
+        document.getElementById('from-date').value = getCurrentDate();
+        document.getElementById('to-date').value = getCurrentDate();
+    }
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var selectTime = document.getElementById("time");
+        selectTime.value = "{{ selected_time }}";
+
+    });
+</script>
+
+<script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+
+
+{% endblock %} 
