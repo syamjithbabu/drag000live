@@ -1764,7 +1764,7 @@
 }
 
 body {
-    background-color: #ffffff;
+    background-color: rgb(160, 189, 235);
     font-family: "Ubuntu", sans-serif;
     font-size: 14px;
     color: #5A5A5A;
@@ -1963,7 +1963,7 @@ ul.choose-skin li,
 }
 
 .l-seagreen {
-    background: linear-gradient(45deg, #8ed8ec, #85f7b5) !important
+    background: linear-gradient(45deg, #8ed8ec, #85adf7) !important
 }
 
 .l-amber {
@@ -2299,7 +2299,7 @@ html.fullscreen-bg #wrapper {
 }
 
 .card {
-    background: #fff;
+    background:rgb(215, 250, 241) !important;
     transition: .5s;
     border: 0;
     margin-bottom: 30px;
@@ -2725,7 +2725,7 @@ html.fullscreen-bg #wrapper {
 .dropdown-menu>.active>a,
 .dropdown-menu>.active>a:hover,
 .dropdown-menu>.active>a:focus {
-    background-color: #5c8ed4
+    background-color: #679be4
 }
 
 .nav-pills>li.active>a,
